@@ -1,0 +1,41 @@
+/* src/components/MessageItem.css */
+.message-item {
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .message-item p {
+    margin: 5px 0;
+  }
+  
+  .message-actions {
+    margin-top: 10px;
+  }
+  
+  .accept-button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 10px;
+  }
+  
+  .accept-button:hover {
+    background-color: #218838;
+  }
+  
+  .reject-button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .reject-button:hover {
+    background-color: #c82333;
+  }
+  
