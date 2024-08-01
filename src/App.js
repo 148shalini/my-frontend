@@ -5,6 +5,7 @@ import Register from './components/Register';
 import UserList from './components/UserList';
 import ReceiveMessage from './components/ReceiveMessage';
 import API from './Api';
+import Chat from './components/Chat';
 
 const App = () => {
   const [token, setToken] = useState(localStorage.getItem('token') || '');
@@ -34,6 +35,7 @@ const App = () => {
           <Route path="/register" element={!token ? <Register /> : <Navigate to="/user-list" />} />
           <Route path="/user-list" element={token ? <UserList /> : <Navigate to="/login" />} />
           <Route path="/receive-messages" element={token ? <ReceiveMessage /> : <Navigate to="/login" />} />
+          <Route path="/chat/:roomName" element={token ? <Chat /> : <Navigate to="/login" />} />
           {/* Add other routes here */}
         </Routes>
         {token && <button onClick={handleLogout}>Logout</button>}
