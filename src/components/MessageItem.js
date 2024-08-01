@@ -15,7 +15,7 @@ const MessageItem = ({ message }) => {
 
   return (
     <li className="message-item">
-      <p><strong>From:</strong> {message.sender.username}</p>
+      <p><strong>From:</strong> {message.sender.phone_number}</p>
       <p><strong>Message:</strong> {message.content}</p>
       <div className="message-actions">
         <button className="accept-button" onClick={() => handleResponse(true)}>Accept</button>
