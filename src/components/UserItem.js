@@ -1,6 +1,6 @@
 // src/components/UserItem.js
 import React, { useState } from 'react';
-import SendMessage from './SendMessage';// Correct the import if it's incorrect
+import SendMessage from './SendMessage';
 import './UserItem.css';
 
 const UserItem = ({ user }) => {

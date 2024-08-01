@@ -1,18 +1,25 @@
 // src/components/Register.js
 import React, { useState } from 'react';
 import API from '../Api';
-import { Link } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import './Register.css';
 
 const Register = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [email, setEmail] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (password !== confirmPassword) {
+      alert('Passwords do not match');
+      return;
+    }
     try {
-      await API.post('/register/', { username, password, email });
+      await API.post('/register/', { username, password });
       alert('Registration successful! You can now log in.');
     } catch (error) {
       console.error('Registration failed', error);
@@ -23,33 +30,48 @@ const Register = () => {
     <div className="register-container">
       <form className="register-form" onSubmit={handleSubmit}>
         <h2>Register</h2>
-        <div>
-          <label>Username:</label>
+        <div className="input-group">
+          <label>Username</label>
           <input
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
+            placeholder="Enter your username"
           />
         </div>
-        <div>
-          <label>Password:</label>
+        <div className="input-group password-field">
+          <label>Password</label>
           <input
-            type="password"
+            type={showPassword ? 'text' : 'password'}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            placeholder="Enter your password"
           />
+          <span
+            className="password-toggle"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+          </span>
         </div>
-        <div>
-          <label>Email:</label>
+        <div className="input-group password-field">
+          <label>Confirm Password</label>
           <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type={showConfirmPassword ? 'text' : 'password'}
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder="Confirm your password"
           />
+          <span
+            className="password-toggle"
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+          >
+            <FontAwesomeIcon icon={showConfirmPassword ? faEyeSlash : faEye} />
+          </span>
         </div>
         <button type="submit">Register</button>
         <p>
-          Already have an account? <Link to="/login">Login here</Link>
+          Already have an account? <a href="/login">Login here</a>
         </p>
       </form>
     </div>
