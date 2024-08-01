@@ -12,7 +12,7 @@ const UserItem = ({ user }) => {
 
   return (
     <li className="user-item">
-      <h3>{user.username}</h3>
+      <h3>{user.phone_number}</h3>
       <button onClick={handleSendMessage}>Send Interest</button>
       {showMessageForm && <SendMessage receiverId={user.id} />}
     </li>

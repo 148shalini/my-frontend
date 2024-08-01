@@ -1,12 +1,12 @@
 // src/components/Register.js
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState } from 'react';
 import API from '../Api';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import './Register.css';
 
 const Register = () => {
-  const [username, setUsername] = useState('');
+  const [phone_number, setphone_number] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -19,7 +19,7 @@ const Register = () => {
       return;
     }
     try {
-      await API.post('/register/', { username, password });
+      await API.post('/register/', { phone_number, password });
       alert('Registration successful! You can now log in.');
     } catch (error) {
       console.error('Registration failed', error);
@@ -31,12 +31,12 @@ const Register = () => {
       <form className="register-form" onSubmit={handleSubmit}>
         <h2>Register</h2>
         <div className="input-group">
-          <label>Username</label>
+          <label>Mobile Number</label>
           <input
             type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="Enter your username"
+            value={phone_number}
+            onChange={(e) => setphone_number(e.target.value)}
+            placeholder="Enter your Mobile number"
           />
         </div>
         <div className="input-group password-field">
