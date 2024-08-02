@@ -27,6 +27,7 @@ const App = () => {
           <Route path="/register" element={!token ? <Register /> : <Navigate to="/user-list" />} />
           <Route path="/user-list" element={<PrivateRoute element={<UserList />} />} />
           <Route path="/receive-messages" element={<PrivateRoute element={<ReceiveMessage />} />} />
+          
 
         </Routes>
         {token && <button onClick={handleLogout}>Logout</button>}
