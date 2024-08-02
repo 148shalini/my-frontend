@@ -1,8 +1,8 @@
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
-import API from '../Api';
+import { useNavigate } from 'react-router-dom';
+import api from '../auth';
 import './Login.css';
 
 const Login = ({ setToken }) => {
@@ -10,32 +10,26 @@ const Login = ({ setToken }) => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await API.post('/login/', { phone_number, password });
+      const response = await api.post('/login/', { phone_number, password });
+      console.log('API Response:', response.data); // Log the response data for debugging
+      const { access, refresh } = response.data; // Extract both tokens from response
 
-      if (response.status === 200) { // Check if the status code is 200
-        console.log('API Response:', response.data); // Log the response data for debugging
-        const { access, refresh } = response.data; // Extract both tokens from response
-
-        if (access && refresh) { // Check if tokens are present
-          setToken(access); // Set the access token
-          localStorage.setItem('accessToken', access); // Store access token in local storage
-          localStorage.setItem('refreshToken', refresh); // Store refresh token in local storage
-          setError(''); // Clear any previous error
-          navigate('/user-list'); // Redirect to /user-list
-        } else {
-          throw new Error('Tokens not received'); // Handle missing tokens
-        }
+      if (access && refresh) {
+        setToken(access); // Set the access token
+        localStorage.setItem('accessToken', access); // Store access token in local storage
+        localStorage.setItem('refreshToken', refresh); // Store refresh token in local storage
+        setError(''); // Clear any previous error
+        navigate('/user-list'); // Redirect to /user-list
       } else {
-        throw new Error('Unexpected response status'); // Handle unexpected status codes
+        throw new Error('Tokens not received'); // Handle missing tokens
       }
     } catch (error) {
       console.error('Login failed:', error.response ? error.response.data : error.message);
-      // Set a more detailed error message if available
       setError(error.response && error.response.data && error.response.data.detail 
         ? error.response.data.detail 
         : 'Invalid phone number or password.');

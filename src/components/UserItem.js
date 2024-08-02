@@ -12,8 +12,16 @@ const UserItem = ({ user }) => {
 
   return (
     <li className="user-item">
-      <h3>{user.phone_number}</h3>
-      <button onClick={handleSendMessage}>Send Interest</button>
+      <div className="user-info">
+        <img src={`https://ui-avatars.com/api/?name=${user.username}&background=random`} alt="User Avatar" className="user-avatar" />
+        <div className="user-details">
+          <h3 className="user-name">{user.username}</h3>
+          <p className="user-phone">{user.phone_number}</p>
+        </div>
+      </div>
+      <button className="send-message-btn" onClick={handleSendMessage}>
+        Send Interest
+      </button>
       {showMessageForm && <SendMessage receiverId={user.id} />}
     </li>
   );

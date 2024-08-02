@@ -1,6 +1,6 @@
 // src/components/UserList.js
 import React, { useEffect, useState } from 'react';
-import API from '../Api';
+import api from '../auth';
 import UserItem from './UserItem';
 import './UserList.css';
 
@@ -10,10 +10,10 @@ const UserList = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await API.get('/users/');
+        const response = await api.get('/users/');
         setUsers(response.data);
       } catch (error) {
-        console.error('Error fetching users', error);
+        console.error('Error fetching users:', error);
       }
     };
 
