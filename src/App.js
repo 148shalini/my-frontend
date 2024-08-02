@@ -14,6 +14,8 @@ const App = () => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     setToken(null); // Update state to reflect logout
+    window.location.href = '/login';
+
   };
 
   return (
