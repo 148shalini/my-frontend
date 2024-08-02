@@ -22,4 +22,18 @@
   .user-list-item:last-child {
     border-bottom: none;
   }
+  .user-info-display {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+  }
   
+  .user-info {
+    margin-bottom: 10px;
+  }
+  
+  .user-info p {
+    margin: 5px 0;
+  }
