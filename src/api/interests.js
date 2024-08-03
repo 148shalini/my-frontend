@@ -6,7 +6,7 @@ import api from '../auth2.js';
 // Function to send an interest to a user
 export const sendInterest = async (receiverId) => {
   try {
-    const response = await api.post('/send-interest/', { receiver: receiverId });
+    const response = await api.post('/send-interest/', { receiver: receiverId, status:"awaited" });
     return response.data;
   } catch (error) {
     console.error('Error sending interest:', error);

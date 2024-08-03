@@ -1,96 +1,87 @@
-// // src/components/UserItem.js
-// import React, { useState } from 'react';
-// import SendMessage from './SendMessage';
-// import './UserItem.css';
-
-// const UserItem = ({ user }) => {
-//   const [showMessageForm, setShowMessageForm] = useState(false);
-
-//   const handleSendMessage = () => {
-//     setShowMessageForm(true);
-//   };
-
-//   return (
-//     <li className="user-item">
-//       <div className="user-info">
-//         <img src={`https://ui-avatars.com/api/?name=${user.username}&background=random`} alt="User Avatar" className="user-avatar" />
-//         <div className="user-details">
-//           <h3 className="user-name">{user.username}</h3>
-//           <p className="user-phone">{user.phone_number}</p>
-//         </div>
-//       </div>
-//       <button className="send-message-btn" onClick={handleSendMessage}>
-//         Send Interest
-//       </button>
-//       {showMessageForm && <SendMessage receiverId={user.id} />}
-//     </li>
-//   );
-// };
-
-// export default UserItem;
-
-
-import { jwtDecode } from 'jwt-decode';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import API from '../Api';
-import './UserItem.css';
+import { acceptRejectInterest, sendInterest } from '../api/interests';
 
 const UserItem = ({ user }) => {
-  const [notificationStatus, setNotificationStatus] = useState(null);
+  const [interestSent, setInterestSent] = useState(!!user.sent_interest_status);
+  const [promptVisible, setPromptVisible] = useState(user.received_interest_status === 'awaited');
+  const [interestStatus, setInterestStatus] = useState(user.sent_interest_status || user.received_interest_status);
   const navigate = useNavigate();
-  const token = localStorage.getItem('accessToken');
-  const loggedInUserId = jwtDecode(token).user_id;
 
   useEffect(() => {
-    const checkNotificationStatus = async () => {
-      try {
-        const response = await API.get(`/notifications/?sender=${loggedInUserId}&receiver=${user.id}`);
-        if (response.data.length > 0) {
-          const notification = response.data[0];
-          if (notification.is_accepted) {
-            setNotificationStatus('accepted');
-          } else {
-            setNotificationStatus('awaiting');
-          }
-        }
-      } catch (error) {
-        console.error('Error checking notification status', error);
-      }
-    };
-
-    checkNotificationStatus();
-  }, [user.id, loggedInUserId]);
+    setPromptVisible(user.received_interest_status === 'awaited');
+    setInterestStatus(user.sent_interest_status || user.received_interest_status);
+  }, [user.received_interest_status, user.sent_interest_status]);
 
   const handleSendInterest = async () => {
     try {
-      await API.post('/notifications/', { receiver_id: user.id });
-      setNotificationStatus('awaiting');
+      const response = await sendInterest(user.id);
+      setInterestSent(true);
+      setInterestStatus('awaited');
     } catch (error) {
-      console.error('Error sending interest', error);
+      console.error('Error sending interest:', error);
     }
   };
 
-  const handleAcceptNotification = async () => {
+  const handleAcceptInterest = async () => {
     try {
-      const response = await API.get(`/notifications/?sender=${user.id}&receiver=${loggedInUserId}`);
-      const notification = response.data[0];
-      await API.patch(`/notifications/${notification.id}/`, { is_accepted: true });
-      setNotificationStatus('accepted');
+      await acceptRejectInterest(user.interest_id, 'accepted');
+      setInterestStatus('accepted');
+      setPromptVisible(false);
     } catch (error) {
-      console.error('Error accepting notification', error);
+      console.error('Error accepting interest:', error);
     }
+  };
+
+  const handleRejectInterest = async () => {
+    try {
+      await acceptRejectInterest(user.interest_id, 'rejected');
+      setInterestStatus('rejected');
+      setPromptVisible(false);
+    } catch (error) {
+      console.error('Error rejecting interest:', error);
+    }
+  };
+
+  const handleStartChat = () => {
+    navigate(`/chat/${user.id}`);
   };
 
   return (
     <li className="user-item">
-      <span>{user.phone_number}</span>
-      {notificationStatus === 'awaiting' ? (
-        <span>Awaiting response...</span>
-      ) : notificationStatus === 'accepted' ? (
-        <button onClick={() => navigate(`/chat/${user.id}`)}>Send Message</button>
-      ) : (
-        <button onClick={handleSendInterest}>Send Interest</button>
+      <div className="user-info">
+        <img
+          src={`https://ui-avatars.com/api/?name=${user.phone_number}&background=random`}
+          alt="User Avatar"
+          className="user-avatar"
+        />
+        <div className="user-details">
+          <h3 className="user-name">{user.phone_number}</h3>
+          {interestStatus && <p className="interest-status">Status: {interestStatus}</p>}
+        </div>
+      </div>
+      {!interestSent && !promptVisible && interestStatus !== 'accepted' && (
+        <button
+          className="send-message-btn"
+          onClick={handleSendInterest}
+        >
+          Send Interest
+        </button>
+      )}
+      {interestStatus === 'awaited' && interestSent && (
+        <p className="interest-status">Request sent, waiting for acceptance</p>
+      )}
+      {interestStatus === 'accepted' && (
+        <button className="start-chat-btn" onClick={handleStartChat}>
+          Start Chat
+        </button>
+      )}
+      {promptVisible && (
+        <div className="interest-prompt">
+          <p>You have a pending interest request</p>
+          <button onClick={handleAcceptInterest}>Accept</button>
+          <button onClick={handleRejectInterest}>Reject</button>
+        </div>
       )}
     </li>
   );
