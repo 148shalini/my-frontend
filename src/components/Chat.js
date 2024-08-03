@@ -1,60 +1,54 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
+import { fetchMessages, sendMessage } from '../api/messages';
 import './Chat.css';
 
-const Chat = ({ roomName }) => {
-  const [message, setMessage] = useState('');
+const Chat = ({ chatPartnerId }) => {
   const [messages, setMessages] = useState([]);
-  const ws = useRef(null);
+  const [newMessage, setNewMessage] = useState('');
 
   useEffect(() => {
-    ws.current = new WebSocket(`ws://localhost:8000/ws/chat/${roomName}/`);
-
-    ws.current.onmessage = (e) => {
-      const data = JSON.parse(e.data);
-      setMessages((prevMessages) => [...prevMessages, data.message]);
+    const fetchChatMessages = async () => {
+      try {
+        const response = await fetchMessages(chatPartnerId);
+        setMessages(response.data);
+      } catch (error) {
+        console.error('Error fetching messages:', error);
+      }
     };
 
-    ws.current.onclose = () => {
-      console.log('WebSocket closed');
-    };
+    fetchChatMessages();
+  }, [chatPartnerId]);
 
-    return () => {
-      ws.current.close();
-    };
-  }, [roomName]);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (message.trim() !== '') {
-      ws.current.send(JSON.stringify({ message }));
-      setMessage('');
+  const handleSendMessage = async () => {
+    try {
+      await sendMessage(chatPartnerId, newMessage);
+      setMessages([...messages, { content: newMessage, sender: 'you' }]);
+      setNewMessage('');
+    } catch (error) {
+      console.error('Error sending message:', error);
     }
   };
 
   return (
     <div className="chat-container">
-      <div className="chat-messages">
+      <div className="messages">
         {messages.map((msg, index) => (
-          <ChatMessage key={index} message={msg} />
+          <div key={index} className={`message ${msg.sender === 'you' ? 'sent' : 'received'}`}>
+            {msg.content}
+          </div>
         ))}
       </div>
-      <form className="chat-form" onSubmit={handleSubmit}>
-        <input
-          type="text"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="Type your message..."
+      <div className="message-input">
+        <input 
+          type="text" 
+          value={newMessage} 
+          onChange={(e) => setNewMessage(e.target.value)} 
+          placeholder="Type a message..."
         />
-        <button type="submit">Send</button>
-      </form>
+        <button onClick={handleSendMessage}>Send</button>
+      </div>
     </div>
   );
 };
-
-const ChatMessage = ({ message }) => (
-  <div className="chat-message">
-    <p>{message}</p>
-  </div>
-);
 
 export default Chat;
