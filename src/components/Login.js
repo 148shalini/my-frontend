@@ -23,6 +23,7 @@ const Login = ({ setToken }) => {
         setToken(access); // Set the access token
         localStorage.setItem('accessToken', access); // Store access token in local storage
         localStorage.setItem('refreshToken', refresh); // Store refresh token in local storage
+        localStorage.setItem('phone_number',phone_number );
         setError(''); // Clear any previous error
         navigate('/user-list'); // Redirect to /user-list
       } else {
