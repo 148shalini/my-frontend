@@ -1,7 +1,7 @@
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 import API from '../Api';
 import './Register.css';
 
@@ -11,21 +11,27 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const navigate = useNavigate(); // Initialize useNavigate
+  const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMessage('');
+    
     if (password !== confirmPassword) {
-      alert('Passwords do not match');
+      setErrorMessage('Passwords do not match');
       return;
     }
+
     try {
       await API.post('/register/', { phone_number, password });
-      alert('Registration successful! Redirecting to login page.');
-      navigate('/login'); // Redirect to login page after successful registration
+      navigate('/login');
     } catch (error) {
-      console.error('Registration failed', error);
-      alert('Registration failed. Please try again.');
+      if (error.response && error.response.data && error.response.data.detail) {
+        setErrorMessage(error.response.data.detail);
+      } else {
+        setErrorMessage('Phone Number is Already in use.');
+      }
     }
   };
 
@@ -33,6 +39,7 @@ const Register = () => {
     <div className="register-container">
       <form className="register-form" onSubmit={handleSubmit}>
         <h2>Register</h2>
+        {errorMessage && <div className="error-message">{errorMessage}</div>}
         <div className="input-group">
           <label htmlFor="phone_number">Mobile Number</label>
           <input
