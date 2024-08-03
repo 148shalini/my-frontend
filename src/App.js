@@ -1,13 +1,13 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import './App.css';
+import ChatRoom from './components/ChatRoom'; // Import the ChatRoom component
 import Login from './components/Login';
+import Navbar from './components/Navbar'; // Import the Navbar component
 import PrivateRoute from './components/PrivateRoute';
 import ReceiveMessage from './components/ReceiveMessage';
 import Register from './components/Register';
 import UserList from './components/UserList';
-import Navbar from './components/Navbar'; // Import the Navbar component
 import { getUserInfoFromToken } from './components/Utils'; // Import the utility function to decode the token
 
 const App = () => {
@@ -31,13 +31,16 @@ const App = () => {
   return (
     <Router>
       <div className="app">
-        {token && window.location.pathname === '/user-list' && <Navbar userInfo={userInfo} handleLogout={handleLogout} />}
+        {token && window.location.pathname !== '/login' && window.location.pathname !== '/register' && (
+          <Navbar userInfo={userInfo} handleLogout={handleLogout} />
+        )}
         <Routes>
           <Route path="/" element={<PrivateRoute element={<Navigate to="/user-list" />} />} />
           <Route path="/login" element={!token ? <Login setToken={setToken} /> : <Navigate to="/user-list" />} />
           <Route path="/register" element={!token ? <Register setToken={setToken} /> : <Navigate to="/user-list" />} />
           <Route path="/user-list" element={<PrivateRoute element={<UserList userInfo={userInfo} />} />} />
           <Route path="/receive-messages" element={<PrivateRoute element={<ReceiveMessage />} />} />
+          <Route path="/chat/:roomName" element={<PrivateRoute element={<ChatRoom />} />} />
           {/* Add other routes here */}
         </Routes>
       </div>
